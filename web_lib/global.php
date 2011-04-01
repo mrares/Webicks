@@ -1,5 +1,4 @@
 <?php
-
 $redis = Webicks_Redis::getInstance("redis://127.0.0.1/");
 
 function isValidPOST() {
