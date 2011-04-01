@@ -78,4 +78,4 @@ function _autoload($class) {
 	include_once $file;
 }
 
-include './run.php';
+include 'global.php';

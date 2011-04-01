@@ -33,8 +33,6 @@ abstract class Mach_Pattern_Singleton
 
     /**
      * Get instance of the Singleton class
-     *
-     * @return Mach_Pattern_Singleton
      */
     public static function getInstance()
     {
