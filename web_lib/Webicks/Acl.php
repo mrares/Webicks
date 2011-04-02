@@ -55,7 +55,6 @@ class Acl extends \Mach\Pattern\Singleton {
 	}
 
 	public function verifyRequest($url = FALSE, $method = 'GET') {
-	    if(!$this->acl) { return 'ALLOW'; }
 		foreach (Acl\Lexer::$rules[Acl\Lexer::CONTEXT_DEFAULT] as $rule) {
 			if(preg_match('/' . $rule['match'] . '/', $url)) {
 				if($action = $rule['rule']->getAction()) {
