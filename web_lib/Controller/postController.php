@@ -1,8 +1,9 @@
 <?php
 namespace Controller;
+use Webicks\Parser\AbstractParser;
+
 use Webicks\Redis;
 use Webicks\Parser;
-use Webicks\AbstractParser;
 
 class postController extends \Webicks\ControllerAbstract {
 
@@ -45,7 +46,6 @@ class postController extends \Webicks\ControllerAbstract {
     }
 
     private function isValidPost(\Webicks\Request $request) {
-        function isValidPOST($request) {
     	$accepted_mime = array('text/html', 'image/png', 'image/jpeg', 'application/javascript', 'text/css', 'text/plain');
 
     	if($request->getParam('publish', false) != 1) {
@@ -68,6 +68,5 @@ class postController extends \Webicks\ControllerAbstract {
     	}
 
     	return true;
-        }
     }
 }

@@ -1,5 +1,9 @@
 <?php
 namespace Webicks;
+use Webicks\Acl\Rule;
+
+use Webicks\Acl\Lexer;
+
 class Acl extends \Mach\Pattern\Singleton {
 
 	const DEFAULT_URL_GLOBAL       = 'url';
@@ -23,7 +27,6 @@ class Acl extends \Mach\Pattern\Singleton {
 
 		if($acl = Document::fetch($this->data[self::REQ_DIRECTORY].self::DEFAULT_ACL_DOCUMENT)) {
 //			header('Content-type: text/plain');
-
 			$myAcl = Acl\Lexer::lex($acl->getContent());
 
 //			var_dump('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
@@ -52,6 +55,7 @@ class Acl extends \Mach\Pattern\Singleton {
 	}
 
 	public function verifyRequest($url = FALSE, $method = 'GET') {
+	    if(!$this->acl) { return 'ALLOW'; }
 		foreach (Acl\Lexer::$rules[Acl\Lexer::CONTEXT_DEFAULT] as $rule) {
 			if(preg_match('/' . $rule['match'] . '/', $url)) {
 				if($action = $rule['rule']->getAction()) {
@@ -61,7 +65,7 @@ class Acl extends \Mach\Pattern\Singleton {
 		}
 
 		if(!isset(Acl\Lexer::$rules[$method])) {
-			throw new Exception('JBANG');
+			throw new \Exception('JBANG');
 		}
 
 		foreach (Acl\Lexer::$rules[$method] as $rule) {
