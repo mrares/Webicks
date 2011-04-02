@@ -1,4 +1,5 @@
 <?php
+namespace Mach\Pattern;
 /**
  * Singleton Design Pattern Abstract Class
  *
@@ -7,7 +8,7 @@
  * @package Mach
  * @subpackage Pattern
  */
-abstract class Mach_Pattern_Singleton
+abstract class Singleton
 {
     protected static $_instances = array();
 

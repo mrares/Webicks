@@ -1,4 +1,6 @@
 <?php
+namespace Webicks;
+
 /**
  * Webicks Redis connection Class
  *
@@ -8,7 +10,7 @@
  *
  * @method Webicks_Redis Webicks_Redis:getInstance()
  */
-class Webicks_Redis extends Mach_Pattern_Singleton
+class Redis extends \Mach\Pattern\Singleton
 {
     private $_connection = false;
 
@@ -18,7 +20,7 @@ class Webicks_Redis extends Mach_Pattern_Singleton
             throw new Exception("Blah, something went wrong!");
         }
 
-        $this->_connection = new Redis();
+        $this->_connection = new \Redis();
         if(isset($matches['timeout']) && ( float ) $matches['timeout'] != 0) {
             $connected = $this->_connection->connect($matches['host'], $matches['port'], $matches['timeout']);
         }

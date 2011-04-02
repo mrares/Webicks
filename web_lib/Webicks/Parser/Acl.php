@@ -1,9 +1,11 @@
 <?php
+namespace Webicsks\Parser;
+use Webicks\Acl\Lexer;
 
-class Webicks_Parser_Acl extends Webicks_Parser_Abstract {
+class Acl extends AbstractParser {
 
 	public function run() {
-		$acl = Webicks_Acl_Lexer::compile($this->_dataContainer);
+		$acl = Lexer::compile($this->_dataContainer);
 	}
-	
+
 }

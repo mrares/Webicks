@@ -1,5 +1,7 @@
 <?php
-class Webicks_Parser extends Mach_Pattern_Singleton
+namespace Webicks;
+
+class Parser extends \Mach\Pattern\Singleton
 {
     private $_parser = false;
 
@@ -10,37 +12,37 @@ class Webicks_Parser extends Mach_Pattern_Singleton
                 $this->_parser = new $parserClass();
             }
             else {
-                $this->_parser = new Webicks_Parser_Default();
+                $this->_parser = new Parser\DefaultParser();
             }
         } else {
-        	$this->_parser = new Webicks_Parser_Default();
+        	$this->_parser = new Parser\DefaultParser();
         }
     }
-    
-    public function run() 
+
+    public function run()
     {
     	$this->_parser->run();
-    }    
-    
+    }
+
     public function loadData( &$data, $map ) {
     	if(!$this->_sanitize($data)) throw new Exception("Unsanitized data provided!");
     	return $this->_parser->load( $data, $map );
     }
-    
+
     public function getData() {
     	return $this->_parser->fetch();
     }
-    
+
     public function getMeta($key = false) {
-		return $this->_parser->getMeta($key); 
+		return $this->_parser->getMeta($key);
     }
-    
+
     public function getDocument() {
     	return $this->_parser->getDocumentFormatted();
     }
-    
+
     private function _sanitize(&$data) {
     	return true;
     }
-    
+
 }

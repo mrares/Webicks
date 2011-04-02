@@ -1,24 +1,25 @@
-<?php 
+<?php
+namespace Webicks\Acl;
 
-class Webicks_Acl_Rule {
-	
+class Rule {
+
 	const RULE_ALLOW = 'ALLOW';
 	const RULE_DENY = 'DENY';
-	
+
 	private $action = null;
 	private $context = null;
-	
+
 	private $rules = array(
 		'/^FROM (?P<param_string>[a-zA-Z_0-9.]*)$/'=>'parseFROM',
 		'/^AUTH http\((?P<param_string>.*)\)$/'=>'parseAuthHTTP'
 	);
-	
+
 	private function parseFROM($paramString) {
 		if($paramString == 'any') {
 			return true;
 		}
-		if(array_key_exists($paramString, Webicks_Acl_Lexer::$acls[$this->context])) {
-			$validate = Webicks_Acl_Lexer::$acls[$this->context][$paramString];
+		if(array_key_exists($paramString, Lexer::$acls[$this->context])) {
+			$validate = Lexer::$acls[$this->context][$paramString];
 			if($validate->validate()) {
 				return true;
 			}
@@ -31,11 +32,11 @@ class Webicks_Acl_Rule {
 		}
 		return false;
 	}
-	
+
 	private function parseAuthHTTP() {
 		return false;
 	}
-	
+
 	public function __construct($context, $action, $ruleString) {
 		$this->context = $context;
 		$matches=array();
@@ -47,9 +48,9 @@ class Webicks_Acl_Rule {
 			}
 		}
 	}
-	
+
 	public function getAction() {
 		return $this->action;
 	}
-	
+
 }

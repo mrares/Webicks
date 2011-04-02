@@ -1,6 +1,7 @@
 <?php
+namespace Webicks\Parser;
 
-class Webicks_Parser_Ssjs extends Webicks_Parser_Abstract {
+class Ssjs extends AbstractParser {
 	/* (non-PHPdoc)
      * @see Webicks_Parser_Abstract::getDocumentFormatted()
      */
@@ -13,5 +14,5 @@ class Webicks_Parser_Ssjs extends Webicks_Parser_Abstract {
      */
     public function run() {
     }
-	
+
 }

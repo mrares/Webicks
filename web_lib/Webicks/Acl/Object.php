@@ -1,4 +1,5 @@
-<?php 
+<?php
+namespace Webicks\Acl;
 //function cidr_match($ip, $range)
 //{
 //    @list ($subnet, $bits) = split('/', $range);
@@ -10,22 +11,22 @@
 //    return ($ip & $mask) == $subnet;
 //}
 
-class Webicks_Acl_Object {
+class Object {
 	private $aclString;
-	
+
 	private $functions = array('IP'=>'matchIP');
-	
+
 	private $_filters = array();
 	private $_stringFilters = array();
-	
+
 	private function parse($string) {
-		
+
 	}
-	
+
 	const MATCH_IP_RULE = 0x1;
-	
+
 	private function matchIP($addrString) {
-		
+
 		$ips = explode(', ', $addrString);
 		foreach($ips as $cidrRange) {
 			@list ($subnet, $bits) = split('/', $cidrRange);
@@ -35,11 +36,11 @@ class Webicks_Acl_Object {
 			$this->_filters[] = function() use ($subnet) {
 				return ($_SERVER['REMOTE_ADDR'] & $subnet) == $subnet;
 			};
-			
+
 			$this->_stringFilters[] = self::MATCH_IP_RULE . $subnet;
 		}
 	}
-	
+
 	public function __construct($aclString) {
 		$matches = array();
 		if(preg_match('/^(?P<function_name>[A-Z]+)\((?P<param_string>.*)\);$/', $aclString, $matches)) {
@@ -49,7 +50,7 @@ class Webicks_Acl_Object {
 			}
 		}
 	}
-	
+
 	public function validate() {
 		$truth = false;
 		foreach($this->_filters as $filter) {
@@ -57,9 +58,9 @@ class Webicks_Acl_Object {
 		}
 		return $truth;
 	}
-	
+
 	public function fetchCompiled() {
 		return $this->_stringFilters;
 	}
-	
+
 }

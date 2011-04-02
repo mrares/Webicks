@@ -1,4 +1,5 @@
 <?php
+namespace Webicks;
 /**
  * Webicks router class
  *
@@ -7,7 +8,7 @@
  * @package Webicks
  *
  */
-class Webicks_Router extends Mach_Pattern_Singleton {
+class Router extends \Mach\Pattern\Singleton {
 	private $_available = false;
 	private $_routed = false;
 
@@ -24,7 +25,7 @@ class Webicks_Router extends Mach_Pattern_Singleton {
 	const REQ_STATUS_404           = 404;
 	const REQ_STATUS_500           = 500;
 	const REQ_STATUS_UNKNOWN       = 0;
-	
+
 	const FILE_EXISTS 		= 0x1; //If file exists stop processing rules.
 	const ALL_RULES_LAST 	= 0x2; //Treat first rule that matches as LAST. (Excludes CHAIN_RULES)
 	const CHAIN_RULES 		= 0x4; //Chain rules, output of last matching as input to the next. (Excludes ALL_RULES_LAST)
@@ -33,19 +34,19 @@ class Webicks_Router extends Mach_Pattern_Singleton {
 
 	protected function __init($url = false, $flags = 0x0) {
 
-		$this->data[Webicks_Router::REQ_ORIGIN]  = ($url!==false) ? $url : $_REQUEST[Webicks_Router::DEFAULT_URL_GLOBAL];
-		$url = $this->data[Webicks_Router::REQ_ORIGIN];
+		$this->data[self::REQ_ORIGIN]  = ($url!==false) ? $url : $_REQUEST[self::DEFAULT_URL_GLOBAL];
+		$url = $this->data[self::REQ_ORIGIN];
 
-		$this->data[Webicks_Router::REQ_DIRECTORY] = substr($url, 0, strrpos($url, '/'));
-        $this->data[Webicks_Router::REQ_DOCUMENT] = substr($url, strrpos($url, '/'));
+		$this->data[self::REQ_DIRECTORY] = substr($url, 0, strrpos($url, '/'));
+        $this->data[self::REQ_DOCUMENT] = substr($url, strrpos($url, '/'));
 
-		if($router = Webicks_Document::fetch($this->data[Webicks_Router::REQ_DIRECTORY].Webicks_Router::DEFAULT_ROUTER_DOCUMENT)) {
-			$url = $this->data[Webicks_Router::REQ_DOCUMENT];
-		} elseif($router = Webicks_Document::fetch(Webicks_Router::DEFAULT_ROUTER_DOCUMENT)) {
-			$url = $this->data[Webicks_Router::REQ_DIRECTORY] . $this->data[Webicks_Router::REQ_DOCUMENT];
+		if($router = Document::fetch($this->data[self::REQ_DIRECTORY].self::DEFAULT_ROUTER_DOCUMENT)) {
+			$url = $this->data[self::REQ_DOCUMENT];
+		} elseif($router = Document::fetch(self::DEFAULT_ROUTER_DOCUMENT)) {
+			$url = $this->data[self::REQ_DIRECTORY] . $this->data[self::REQ_DOCUMENT];
 		} else {
-			$this->data[Webicks_Router::REQ_DESTINATION] = $url;
-			$this->data[Webicks_Router::REQ_STATUS] = Webicks_Router::REQ_STATUS_UNKNOWN;
+			$this->data[self::REQ_DESTINATION] = $url;
+			$this->data[self::REQ_STATUS] = self::REQ_STATUS_UNKNOWN;
 			return;
 		}
 
@@ -59,52 +60,52 @@ class Webicks_Router extends Mach_Pattern_Singleton {
             foreach($routing as $route=>$destination) {
                 $route = str_replace('/', '\/', $route);
                 if($destination[0]!='/') {
-                	$destination = $this->data[Webicks_Router::REQ_DIRECTORY] . '/' . $destination;
+                	$destination = $this->data[self::REQ_DIRECTORY] . '/' . $destination;
                 }
-                
+
                 if (! $flags & self::CHAIN_RULES ) {
                 	$newDest = $url;
                 }
-                
+
             	if($flags & self::FILE_EXISTS) {
-                	if(Webicks_Document::exists(trim($newDest))) {
+                	if(Document::exists(trim($newDest))) {
                 		//If current destination marks existing file, stop processing rules
                 		break;
                 	}
                 }
-                
+
                 $newDest = preg_replace("/" . $route . "/", $destination, $newDest, - 1, $count);
                 $newDest = str_replace('//', '/', $newDest);
-                
+
                 if($count && ($flags & self::ALL_RULES_LAST) && ($flags & self::CHAIN_RULES == 0x0)) {
                     break; // all rules are LAST
                 }
             }
 
-            if( ! Webicks_Document::exists(trim($newDest))) {
+            if( ! Document::exists(trim($newDest))) {
                 if(isset($routing['404'])) {
                     $this->_routed = true;
                     $newDest = $routing['404'];
-                    $this->data[Webicks_Router::REQ_STATUS] = Webicks_Router::REQ_STATUS_404;
+                    $this->data[self::REQ_STATUS] = self::REQ_STATUS_404;
                 }
                 else {
-                    $newDest = $this->data[Webicks_Router::REQ_ORIGIN];
-                    $this->data[Webicks_Router::REQ_STATUS] = Webicks_Router::REQ_STATUS_UNKNOWN;
+                    $newDest = $this->data[self::REQ_ORIGIN];
+                    $this->data[self::REQ_STATUS] = self::REQ_STATUS_UNKNOWN;
                 }
             } else {
             	$this->_routed = true;
-                $this->data[Webicks_Router::REQ_STATUS] = Webicks_Router::REQ_STATUS_200;
+                $this->data[self::REQ_STATUS] = self::REQ_STATUS_200;
             }
 
-            $this->data[Webicks_Router::REQ_DESTINATION] = trim($newDest);
+            $this->data[self::REQ_DESTINATION] = trim($newDest);
 	}
 
     public function getDestination() {
-    	return $this->data[Webicks_Router::REQ_DESTINATION];
+    	return $this->data[self::REQ_DESTINATION];
     }
 
     public function isStatus($status) {
-    	return ($this->data[Webicks_Router::REQ_STATUS] === $status);
+    	return ($this->data[self::REQ_STATUS] === $status);
     }
 
     public function dump() {

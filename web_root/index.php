@@ -7,6 +7,7 @@
  *  $cfg = Mach_Config::init(); -> Mach_Config instance (singleton)
 */
 
+use Mach\Autoloader;
 date_default_timezone_set ( 'Europe/Bucharest' );
 
 /*
@@ -22,7 +23,16 @@ set_include_path ( $dir . '/../web_lib'  );
 
 //require_once 'Smarty/Smarty.class.php';
 //require_once 'Smarty/Smarty_Compiler.class.php';
-spl_autoload_register ( '_autoload' );
+
+//die('here');
+require_once __DIR__.'/../web_lib/Mach/Autoloader.php';
+$autoloader = new Autoloader();
+$autoloader->registerNamespaces(array(
+    'Mach'=>__DIR__.'/../web_lib',
+    'Webicks'=>__DIR__.'/../web_lib'
+));
+$autoloader->register();
+//spl_autoload_register ( '_autoload' );
 
 /*
  * Load default Config
@@ -42,7 +52,7 @@ spl_autoload_register ( '_autoload' );
 if(!isset($_REQUEST['url']) || empty($_REQUEST['url'])) {
 	$_REQUEST['url'] = '/';
 }
-	
+
 if (! empty ( $_SERVER ['HTTP_X_FORWARDED_FOR'] )) {
 	$_SERVER ['REMOTE_ADDR'] = $_SERVER ['HTTP_X_FORWARDED_FOR'];
 }
@@ -67,15 +77,6 @@ function _log() {
 	foreach ( $args as $arg ) {
 		Mach_Log::getInstance ()->log ( $arg );
 	}
-}
-
-/**
- * Replaces the heavy processing done by Zend_Loader
- * @param string $class
- */
-function _autoload($class) {
-	$file = str_replace ( '_', '/', $class ) . '.php';
-	include_once $file;
 }
 
 include 'global.php';

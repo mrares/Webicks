@@ -1,5 +1,7 @@
 <?php
-abstract class Webicks_Parser_Abstract
+namespace Webicks\Parser;
+
+abstract class AbstractParser
 {
     const MIME_TYPE = 'MIME';
     const CONTENT = 'CONTENT';
@@ -9,7 +11,7 @@ abstract class Webicks_Parser_Abstract
 
     function load( &$data, $map ) {
         $this->_dataContainer = $data[$map[self::CONTENT]];
-        
+
         foreach($map as $dataKey=>$mappedKey) {
             if(isset($data[$mappedKey])) {
                 $this->_metaContainer[$dataKey] = $data[$mappedKey];
@@ -26,7 +28,7 @@ abstract class Webicks_Parser_Abstract
         if($key) {
             return $this->_metaContainer[$key];
         }
-        
+
         return $this->_metaContainer;
     }
 

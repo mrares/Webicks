@@ -1,13 +1,14 @@
 <?php
+namespace Webicks;
 
-class Webicks_Document {
+class Document {
 
 	private $_key = false;
 	private $_raw = false;
 	public $new = false;
 
 	public function __construct($key) {
-		if($this->_raw = unserialize(Webicks_Redis::getInstance()->get($key))) {
+		if($this->_raw = unserialize(Redis::getInstance()->get($key))) {
 //			return $this;
 		} else {
 			$this->new = true;
@@ -23,7 +24,7 @@ class Webicks_Document {
 	 * @return Webicks_Document
 	 */
 	public static function fetch($key) {
-		$doc = new Webicks_Document($key);
+		$doc = new self($key);
 		if ($doc->new) {
 			unset($doc);
 			return false;
@@ -39,7 +40,7 @@ class Webicks_Document {
 	 * @return Webicks_Document
 	 */
 	public static function make($key, $force = false) {
-		$doc = new Webicks_Document($key);
+		$doc = new self($key);
 		if(!$doc->new && !$force) {
 			unset($doc);
 			return false;
@@ -56,7 +57,7 @@ class Webicks_Document {
 	 * @return bool
 	 */
 	public static function exists($key) {
-		return Webicks_Redis::getInstance()->exists($key);
+		return Redis::getInstance()->exists($key);
 	}
 
 	public function getType() {
@@ -87,7 +88,7 @@ class Webicks_Document {
 		if(!$this->new && !$force) {
 			throw new Exception("This is not a new object");
 		}
-		Webicks_Redis::getInstance()->set($this->_key, serialize($this->_raw));
+		Redis::getInstance()->set($this->_key, serialize($this->_raw));
 	}
 
 	public function __toString() {

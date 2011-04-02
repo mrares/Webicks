@@ -1,6 +1,6 @@
 <?php
 //Connect to local REDIS instance
-$redis = Webicks_Redis::getInstance("redis://127.0.0.1/");
+$redis = Webicks\Redis::getInstance("redis://127.0.0.1/");
 
 function isValidPOST() {
 	$accepted_mime = array('text/html', 'image/png', 'image/jpeg', 'application/javascript', 'text/css', 'text/plain');
@@ -44,13 +44,13 @@ if(isValidPOST()) {
 }
 
 //Init router instance...
-$router = Webicks_Router::getInstance($_REQUEST['url'], Webicks_Router::ALL_RULES_LAST | Webicks_Router::FILE_EXISTS);
+$router = Webicks\Router::getInstance($_REQUEST['url'], Webicks\Router::ALL_RULES_LAST | Webicks\Router::FILE_EXISTS);
 
 //Init ACL instance
-$acl = Webicks_Acl::getInstance($_REQUEST['url']);
+$acl = Webicks\Acl::getInstance($_REQUEST['url']);
 
-if($document = Webicks_Document::fetch($_REQUEST['url'])) {
-	if($acl->verifyRequest($_REQUEST['url']) == Webicks_Acl_Rule::RULE_DENY) {
+if($document = Webicks\Document::fetch($_REQUEST['url'])) {
+	if($acl->verifyRequest($_REQUEST['url']) == Webicks\Acl\Rule::RULE_DENY) {
 		die('ACCESS DENIED');
 	}
 	header("Content-type: ".$document->getType());
@@ -58,8 +58,8 @@ if($document = Webicks_Document::fetch($_REQUEST['url'])) {
 	exit;
 }
 
-if( $content = Webicks_Document::fetch($router->getDestination())) {
-	if($acl->verifyRequest($router->getDestination()) == Webicks_Acl_Rule::RULE_DENY) {
+if( $content = Webicks\Document::fetch($router->getDestination())) {
+	if($acl->verifyRequest($router->getDestination()) == Webicks\Acl\Rule::RULE_DENY) {
 		die('ACCESS DENIED');
 	}
 
