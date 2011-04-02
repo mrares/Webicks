@@ -7,7 +7,7 @@ class Parser extends \Mach\Pattern\Singleton
 
     public function __init( $url ) {
         if(preg_match('/.*\.(?P<extension>[a-zA-Z]*)$/', $url, $matches)) {
-            $parserClass = __class__ . '_' . ucfirst($matches['extension']);
+            $parserClass = 'Parser'.ucfirst($matches['extension']);
             if(@class_exists($parserClass)) { //This WILL throw errors, not all extensions are parsed.
                 $this->_parser = new $parserClass();
             }

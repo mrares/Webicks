@@ -29,7 +29,8 @@ require_once __DIR__.'/../web_lib/Mach/Autoloader.php';
 $autoloader = new Autoloader();
 $autoloader->registerNamespaces(array(
     'Mach'=>__DIR__.'/../web_lib',
-    'Webicks'=>__DIR__.'/../web_lib'
+    'Webicks'=>__DIR__.'/../web_lib',
+    'Controller'=>__DIR__.'/../web_lib'
 ));
 $autoloader->register();
 //spl_autoload_register ( '_autoload' );
@@ -72,11 +73,11 @@ ini_set ( 'session.cookie_path', '/' );
  * @param $label
  * @return void
  */
-function _log() {
-	$args = func_get_args ();
-	foreach ( $args as $arg ) {
-		Mach_Log::getInstance ()->log ( $arg );
-	}
-}
+//function _log() {
+//	$args = func_get_args ();
+//	foreach ( $args as $arg ) {
+//		Mach_Log::getInstance ()->log ( $arg );
+//	}
+//}
 
 include 'global.php';

@@ -34,6 +34,7 @@ abstract class Singleton
 
     /**
      * Get instance of the Singleton class
+     * @return Mach\Pattern\Singleton
      */
     public static function getInstance()
     {

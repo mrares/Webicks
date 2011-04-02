@@ -11,12 +11,13 @@ namespace Webicks;
 class Router extends \Mach\Pattern\Singleton {
 	private $_available = false;
 	private $_routed = false;
+	private $_action = 'index';
 
 	const DEFAULT_URL_GLOBAL       = 'url';
 	const DEFAULT_ROUTER_DOCUMENT  = '/.router';
 
 	const REQ_DIRECTORY            = 'docDir';
-	const REQ_DOCUMENT            = 'docFile';
+	const REQ_DOCUMENT             = 'docFile';
 	const REQ_ORIGIN               = 'origUrl';
 	const REQ_DESTINATION          = 'destUrl';
 	const REQ_STATUS               = 'status';
@@ -50,54 +51,61 @@ class Router extends \Mach\Pattern\Singleton {
 			return;
 		}
 
-		  $routing = unserialize($router->getContent());
+		$routing = unserialize($router->getContent());
 
-            if(!is_array($routing)) {
-               throw new Exception('WTF NO ARRAY');
+        if(!is_array($routing)) {
+           throw new Exception('WTF NO ARRAY');
+        }
+
+        if( Document::exists(trim($url))) {
+            $this->_routed = true;
+            $this->data[self::REQ_DESTINATION] = trim($url);
+            $this->data[self::REQ_STATUS] = self::REQ_STATUS_200;
+            return;
+        }
+
+        $newDest = $url;
+        foreach($routing as $route=>$destination) {
+            $route = str_replace('/', '\/', $route);
+            if($destination[0]!='/') {
+            	$destination = $this->data[self::REQ_DIRECTORY] . '/' . $destination;
             }
 
-            $newDest = $url;
-            foreach($routing as $route=>$destination) {
-                $route = str_replace('/', '\/', $route);
-                if($destination[0]!='/') {
-                	$destination = $this->data[self::REQ_DIRECTORY] . '/' . $destination;
-                }
-
-                if (! $flags & self::CHAIN_RULES ) {
-                	$newDest = $url;
-                }
-
-            	if($flags & self::FILE_EXISTS) {
-                	if(Document::exists(trim($newDest))) {
-                		//If current destination marks existing file, stop processing rules
-                		break;
-                	}
-                }
-
-                $newDest = preg_replace("/" . $route . "/", $destination, $newDest, - 1, $count);
-                $newDest = str_replace('//', '/', $newDest);
-
-                if($count && ($flags & self::ALL_RULES_LAST) && ($flags & self::CHAIN_RULES == 0x0)) {
-                    break; // all rules are LAST
-                }
+            if (! $flags & self::CHAIN_RULES ) {
+            	$newDest = $url;
             }
 
-            if( ! Document::exists(trim($newDest))) {
-                if(isset($routing['404'])) {
-                    $this->_routed = true;
-                    $newDest = $routing['404'];
-                    $this->data[self::REQ_STATUS] = self::REQ_STATUS_404;
-                }
-                else {
-                    $newDest = $this->data[self::REQ_ORIGIN];
-                    $this->data[self::REQ_STATUS] = self::REQ_STATUS_UNKNOWN;
-                }
-            } else {
-            	$this->_routed = true;
-                $this->data[self::REQ_STATUS] = self::REQ_STATUS_200;
+        	if($flags & self::FILE_EXISTS) {
+            	if(Document::exists(trim($newDest))) {
+            		//If current destination marks existing file, stop processing rules
+            		break;
+            	}
             }
 
-            $this->data[self::REQ_DESTINATION] = trim($newDest);
+            $newDest = preg_replace("/" . $route . "/", $destination, $newDest, - 1, $count);
+            $newDest = str_replace('//', '/', $newDest);
+
+            if($count && ($flags & self::ALL_RULES_LAST) && ($flags & self::CHAIN_RULES == 0x0)) {
+                break; // all rules are LAST
+            }
+        }
+
+        if( ! Document::exists(trim($newDest))) {
+            if(isset($routing['404'])) {
+                $this->_routed = true;
+                $newDest = $routing['404'];
+                $this->data[self::REQ_STATUS] = self::REQ_STATUS_404;
+            }
+            else {
+                $newDest = $this->data[self::REQ_ORIGIN];
+                $this->data[self::REQ_STATUS] = self::REQ_STATUS_UNKNOWN;
+            }
+        } else {
+        	$this->_routed = true;
+            $this->data[self::REQ_STATUS] = self::REQ_STATUS_200;
+        }
+
+        $this->data[self::REQ_DESTINATION] = trim($newDest);
 	}
 
     public function getDestination() {
@@ -112,5 +120,13 @@ class Router extends \Mach\Pattern\Singleton {
     	header("Content-type: text/plain");
     	var_dump($this->data);
     	die();
+    }
+
+    public function getAction() {
+        return $this->_action;
+    }
+
+    public function setAction($action) {
+        $this->_action = $action;
     }
 }
