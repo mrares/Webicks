@@ -6,10 +6,12 @@ var	http = require('http'),
 	Script = process.binding('evals').Script,
 	cachedScripts = [],
 	stats = {hits:0,misses:0};
+var util = require('util');
 var document = require('./libs/document.js');
 
 setInterval(function(){
     console.log(stats);
+    console.log(util.inspect(process.memoryUsage()));
     stats={hits:0,misses:0};}
 ,1000);
 
@@ -23,67 +25,6 @@ http.createServer(function(request, response) {
 	if(request.method == 'GET') {
 	    myDoc.response = response;
 	    myDoc.load(urlObj.pathname);
-//		if(cachedScripts[urlObj.pathname] != undefined) {
-//			stats.hits+=1;
-//			var sandbox = {
-//				console:console,
-//                redis: redis,
-//                response: response,
-//                result:{},
-//                onSuccess:function(value){
-//                    response.write(value);
-//                    response.end();
-//                },
-//                onFail:function(){
-//                    response.write(value);
-//                    response.end();
-//                }
-//		    };
-//            //script = new Script(value);
-//            cachedScripts[urlObj.pathname].runInNewContext(sandbox);
-//		} else {
-//    		stats.misses+=1;
-//    		redis.get(
-//    			urlObj.pathname,
-//    			function( err, value ){
-//        			if(err != null) {
-//        				consle.log(err);
-//        				response.write(500);
-//        				response.end();
-//        			}
-//    				if(value == null) {
-//    					response.write("404\n");
-//    					response.end();
-//    				} else {
-//    					var sandbox = { 
-//    						console:console, 
-//    						redis: redis,
-//    						response: response, 
-//    						result:{}, 
-//    						onSuccess:function(value){
-//    							response.write(value);
-//    							response.end();
-//    						}, 
-//    						onFail:function(){
-//    							response.write(value);
-//                                response.end();
-//    						}
-//    					};
-//
-//    					console.log(value.toString());
-//    					try{
-//        					cachedScripts[urlObj.pathname] = new Script(value);
-//        					cachedScripts[urlObj.pathname].runInNewContext(sandbox);
-//    					} catch (e) {
-//                            // TODO: handle exception
-//    					    response.write("500\n");
-//    					    response.end();
-//                        }
-//    					setTimeout(function(){delete cachedScripts[urlObj.pathname];},1000);
-//    				}
-//    			}
-//    		);
-//		}
 	} else if (request.method == 'POST') {
 		var form = new formidable.IncomingForm();
 		form.parse(request, function(err, fields, files) {
