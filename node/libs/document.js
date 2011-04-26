@@ -12,6 +12,8 @@ document.prototype.response = {};
 document.prototype.stats = {};
 document.prototype.cache = [];
 document.prototype.load = function(location) {
+	try{throw {};}catch(e){}
+	
     var sandbox = {
     		console:console,
     		redis: this.redis,
@@ -37,12 +39,12 @@ document.prototype.load = function(location) {
             (function( err, value ){
                 if(err != null) {
                     consle.log(err);
-                    response.write(500);
-                    response.end();
+                    this.response.write(500);
+                    this.response.end();
                 }
                 if(value == null) {
-                    response.write("404\n");
-                    response.end();
+                    this.response.write("404\n");
+                    this.response.end();
                 } else {
                     try {
                         var scriptString = value.toString('utf8', 0, value.length - 1 );
@@ -59,12 +61,6 @@ document.prototype.load = function(location) {
             }).bind(this)
         );
     }
-
-    
-    
-    
-    
-    
 };
 document.prototype.save = function(location, content) {
     return true;
